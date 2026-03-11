@@ -141,6 +141,23 @@ body {
     animation: bootup-screen 1s ease-out forwards;
 }
 
+/* Idle pulse animation */
+.screen:not(.active) {
+    animation: bootup-screen 1s ease-out forwards, idle-pulse 3s ease-in-out 1s infinite;
+}
+
+@keyframes idle-pulse {
+
+    0%,
+    100% {
+        box-shadow: inset 0px 0px 30px #000, 0 0 8px 2px rgba(28, 217, 71, 0.15);
+    }
+
+    50% {
+        box-shadow: inset 0px 0px 30px #000, 0 0 20px 6px rgba(28, 217, 71, 0.35);
+    }
+}
+
 @keyframes bootup-screen {
     0% {
         transform: scale(0.6);
@@ -228,6 +245,7 @@ body {
 .screen.active {
     background-color: #18ab3f;
     box-shadow: 0 0 50px 15px rgba(28, 217, 71, 0.4), inset 0px 0px 40px rgba(0, 0, 0, 0.6);
+    animation: none;
 }
 
 .screen.active .left-chevron {
@@ -236,6 +254,92 @@ body {
 
 .screen.active .right-chevron {
     transform: translateX(120%);
+}
+
+/* transform silhouette - the dramatic zoom out right before you go alien */
+.screen.transforming .alien-display {
+    transform: scale(2.5);
+    opacity: 0;
+    filter: brightness(0) drop-shadow(0 0 20px #1cd947);
+}
+
+/* transform flash effect - flashbang but make it aesthetic */
+.transform-flash {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #1cd947;
+    opacity: 0;
+    z-index: 9999;
+    pointer-events: none;
+    transition: opacity 0.1s;
+}
+
+.transform-flash.active {
+    animation: flash 1.2s ease-out forwards;
+}
+
+@keyframes flash {
+    0% {
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+/* holographic particles - little floaty bois vibing in the background */
+.particles-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 99;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.particles-container.active {
+    opacity: 1;
+}
+
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #1cd947;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #1cd947;
+    animation: float-particle linear infinite;
+}
+
+@keyframes float-particle {
+    0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-120px) translateX(var(--drift));
+        opacity: 0;
+    }
 }
 
 /* rotation hitboxes */
@@ -282,4 +386,10 @@ body {
 
 .btn-right:hover .btn-arrow {
     transform: translateX(3px);
+}
+
+/* screen hover */
+.screen:hover {
+    border-color: #1cd947;
+    box-shadow: inset 0px 0px 30px #000, 0 0 15px 3px rgba(28, 217, 71, 0.3);
 }
