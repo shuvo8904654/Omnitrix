@@ -138,4 +138,148 @@ body {
     align-items: center;
     cursor: pointer;
     z-index: 10;
+    animation: bootup-screen 1s ease-out forwards;
+}
+
+@keyframes bootup-screen {
+    0% {
+        transform: scale(0.6);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* the '><' green hourglass shapes - idk why but these go so hard */
+.chevron {
+    position: absolute;
+    width: 60px;
+    height: 190px;
+    background-color: #1cd947;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 15;
+}
+
+.left-chevron {
+    left: -5px;
+    clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+
+.right-chevron {
+    right: -5px;
+    clip-path: polygon(100% 0, 0 50%, 100% 100%);
+}
+
+/* dna scan line - that green laser sweep, very sci-fi very demure */
+.scan-line {
+    position: absolute;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(to bottom, transparent, rgba(28, 217, 71, 0.6), transparent);
+    z-index: 14;
+    opacity: 0;
+    pointer-events: none;
+    top: 0;
+}
+
+.scan-line.scanning {
+    opacity: 1;
+    animation: scan-sweep 0.6s ease-in-out;
+}
+
+@keyframes scan-sweep {
+    0% {
+        top: 0%;
+        opacity: 1;
+    }
+
+    100% {
+        top: 100%;
+        opacity: 0;
+    }
+}
+
+/* alien display on screen */
+.alien-display {
+    position: absolute;
+    width: 75%;
+    height: 75%;
+    object-fit: contain;
+    z-index: 12;
+    opacity: 0;
+    filter: drop-shadow(0 0 8px #1cd947);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    pointer-events: none;
+}
+
+.screen.active .alien-display {
+    opacity: 1;
+}
+
+/* active state - she woke up and chose violence */
+.screen.active {
+    background-color: #18ab3f;
+    box-shadow: 0 0 50px 15px rgba(28, 217, 71, 0.4), inset 0px 0px 40px rgba(0, 0, 0, 0.6);
+}
+
+.screen.active .left-chevron {
+    transform: translateX(-120%);
+}
+
+.screen.active .right-chevron {
+    transform: translateX(120%);
+}
+
+/* rotation hitboxes */
+.btn-left,
+.btn-right {
+    position: absolute;
+    width: 60px;
+    height: 200px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    z-index: 50;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.omnitrix:hover .btn-left,
+.omnitrix:hover .btn-right {
+    opacity: 1;
+}
+
+.btn-left {
+    left: -30px;
+}
+
+.btn-right {
+    right: -30px;
+}
+
+.btn-arrow {
+    color: #1cd947;
+    font-size: 24px;
+    filter: drop-shadow(0 0 6px #1cd947);
+    pointer-events: none;
+    transition: transform 0.2s ease;
+}
+
+.btn-left:hover .btn-arrow {
+    transform: translateX(-3px);
+}
+
+.btn-right:hover .btn-arrow {
+    transform: translateX(3px);
 }
