@@ -259,3 +259,122 @@ body.albedo .transform-timer-fill {
 body.albedo .transform-timer-label {
     color: #d91c1c;
 }
+
+/* playlist panel - the dj booth for alien sets */
+.playlist-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    width: 360px;
+    max-height: 500px;
+    background: rgba(10, 10, 10, 0.95);
+    border: 2px solid #1cd947;
+    border-radius: 16px;
+    padding: 20px;
+    z-index: 10001;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 0 30px rgba(28, 217, 71, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+}
+
+.playlist-panel.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+body.albedo .playlist-panel {
+    border-color: #d91c1c;
+    box-shadow: 0 0 30px rgba(217, 28, 28, 0.3);
+}
+
+.playlist-panel h3 {
+    color: #1cd947;
+    text-align: center;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+body.albedo .playlist-panel h3 {
+    color: #d91c1c;
+}
+
+.playlist-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.playlist-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: rgba(28, 217, 71, 0.1);
+    border: 1px solid rgba(28, 217, 71, 0.2);
+    border-radius: 8px;
+    color: #ccc;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.playlist-item:hover {
+    background: rgba(28, 217, 71, 0.25);
+}
+
+.playlist-item.active-playlist {
+    border-color: #1cd947;
+    background: rgba(28, 217, 71, 0.2);
+}
+
+body.albedo .playlist-item {
+    background: rgba(217, 28, 28, 0.1);
+    border-color: rgba(217, 28, 28, 0.2);
+}
+
+body.albedo .playlist-item:hover {
+    background: rgba(217, 28, 28, 0.25);
+}
+
+.playlist-item .pl-delete {
+    background: none;
+    border: none;
+    color: #ff4444;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0 4px;
+}
+
+.playlist-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.playlist-actions button {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #1cd947;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.4);
+    color: #1cd947;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.2s;
+}
+
+.playlist-actions button:hover {
+    background: rgba(28, 217, 71, 0.2);
+}
+
+body.albedo .playlist-actions button {
+    border-color: #d91c1c;
+    color: #d91c1c;
+}
