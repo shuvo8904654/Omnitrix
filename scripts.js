@@ -189,6 +189,7 @@ function updateHighlights() {
 // rotate the ring - spin that wheel like its a game show
 function rotateRing(steps) {
     if (!isActive) return; // cant scroll if the watch aint on bro
+    if (window.Omnitrix?.isCoolingDown && window.Omnitrix.isCoolingDown()) return; // chill its recharging
     playSound('cycle');
     resetInactivityTimer();
     triggerScanLine();
@@ -224,6 +225,7 @@ function rotateRing(steps) {
 
 // transform - ITS HERO TIME
 function triggerTransform() {
+    if (window.Omnitrix?.isCoolingDown && window.Omnitrix.isCoolingDown()) return;
     playSound('transform');
     clearTimeout(inactivityTimer);
 
@@ -397,3 +399,37 @@ infoClose.addEventListener('click', closeInfoPanel);
 infoPanel.addEventListener('click', (e) => {
     if (e.target === infoPanel) closeInfoPanel();
 });
+
+// expose global omnitrix api - the public api that runs this whole universe
+window.Omnitrix = {
+    get isActive() { return isActive; },
+    set isActive(v) { isActive = v; },
+    get isAlbedo() { return isAlbedo; },
+    get soundEnabled() { return soundEnabled; },
+    set soundEnabled(v) { soundEnabled = v; },
+    get currentAlienIndex() { return currentAlienIndex; },
+    get alienSubset() { return alienSubset; },
+    set alienSubset(v) { alienSubset = v; },
+    get displayCount() { return displayCount; },
+    get totalAliens() { return totalAliens; },
+    get ringRotation() { return ringRotation; },
+    set ringRotation(v) { ringRotation = v; },
+    set currentAlienIndex(v) { currentAlienIndex = v; },
+    el: { anel, holoRing, alienDisplay, scanLine, particlesContainer, flashDiv: null },
+    playSound,
+    rotateRing,
+    triggerTransform,
+    buildRing,
+    updateHighlights,
+    updateFavBtn,
+    powerDown,
+    resetInactivityTimer,
+    createParticles,
+    triggerScanLine,
+    isFavorited,
+    toggleFavorite,
+    openInfoPanel,
+    closeInfoPanel
+};
+
+window.Omnitrix.el.flashDiv = flashDiv;

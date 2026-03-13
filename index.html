@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="./features/features.css">
     <title>Ben 10 Omniverse Omnitrix</title>
 </head>
 
@@ -56,6 +57,14 @@
 
                         <div class="scan-line" id="scan-line"></div>
 
+
+                        <div class="cooldown-bar-container" id="cooldown-bar-container">
+                            <div class="cooldown-bar" id="cooldown-bar"></div>
+                        </div>
+
+
+                        <img id="alien-display-prev" class="alien-display-prev" alt="">
+
                         <img id="alien-display" class="alien-display" alt="">
 
 
@@ -68,12 +77,23 @@
         </div>
 
 
+        <div class="light-burst" id="light-burst"></div>
+
+        <div class="light-rays" id="light-rays"></div>
+
+
         <div class="btn-left" id="btn-left">
             <span class="btn-arrow">&#9664;</span>
         </div>
         <div class="btn-right" id="btn-right">
             <span class="btn-arrow">&#9654;</span>
         </div>
+    </div>
+
+
+    <div class="transform-timer" id="transform-timer">
+        <span class="transform-timer-label" id="transform-timer-label"></span>
+        <div class="transform-timer-fill" id="transform-timer-fill"></div>
     </div>
 
 
@@ -100,6 +120,10 @@
     </div>
 
     <script src="./scripts.js"></script>
+
+
+    <script src="./features/effects.js"></script>
+    <script src="./features/cooldown.js"></script>
 
 </body>
 

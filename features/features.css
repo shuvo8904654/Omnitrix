@@ -1,0 +1,261 @@
+﻿.screen.glitch {
+    animation: glitch-effect 0.3s steps(4) !important;
+}
+
+@keyframes glitch-effect {
+    0% {
+        transform: translate(0);
+        filter: none;
+    }
+
+    20% {
+        transform: translate(-3px, 2px);
+        filter: hue-rotate(90deg) saturate(2);
+    }
+
+    40% {
+        transform: translate(2px, -2px);
+        filter: hue-rotate(-90deg) brightness(1.5);
+    }
+
+    60% {
+        transform: translate(-1px, 1px);
+        filter: hue-rotate(45deg) contrast(1.5);
+    }
+
+    80% {
+        transform: translate(3px, -1px);
+        filter: hue-rotate(-45deg) saturate(1.5);
+    }
+
+    100% {
+        transform: translate(0);
+        filter: none;
+    }
+}
+
+.glitch-line {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.3);
+    z-index: 16;
+    pointer-events: none;
+    opacity: 0;
+}
+
+.screen.glitch .glitch-line {
+    animation: glitch-line-sweep 0.3s steps(6);
+}
+
+@keyframes glitch-line-sweep {
+    0% {
+        top: 10%;
+        opacity: 1;
+    }
+
+    50% {
+        top: 60%;
+        opacity: 0.6;
+    }
+
+    100% {
+        top: 90%;
+        opacity: 0;
+    }
+}
+
+/* powerup burst - glow up of the century */
+.light-burst {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(28, 217, 71, 0.6) 0%, transparent 70%);
+    z-index: 9;
+    pointer-events: none;
+    opacity: 0;
+    transition: none;
+}
+
+.light-burst.active {
+    animation: burst-expand 0.8s ease-out forwards;
+}
+
+@keyframes burst-expand {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.6;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+    }
+}
+
+body.albedo .light-burst {
+    background: radial-gradient(circle, rgba(217, 28, 28, 0.6) 0%, transparent 70%);
+}
+
+/* light rays - anime power up scene energy */
+.light-rays {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 8;
+    pointer-events: none;
+    opacity: 0;
+}
+
+.light-rays.active {
+    animation: rays-spin 1.5s ease-out forwards;
+}
+
+.light-ray {
+    position: absolute;
+    width: 2px;
+    height: 150px;
+    top: 50%;
+    left: 50%;
+    transform-origin: bottom center;
+    background: linear-gradient(to top, rgba(28, 217, 71, 0.5), transparent);
+}
+
+body.albedo .light-ray {
+    background: linear-gradient(to top, rgba(217, 28, 28, 0.5), transparent);
+}
+
+@keyframes rays-spin {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -50%) rotate(45deg);
+    }
+}
+
+/* alien crossfade - smooth operator transition */
+.alien-display-prev {
+    position: absolute;
+    width: 75%;
+    height: 75%;
+    object-fit: contain;
+    z-index: 11;
+    opacity: 0;
+    filter: drop-shadow(0 0 8px #1cd947);
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+body.albedo .alien-display-prev {
+    filter: drop-shadow(0 0 8px #d91c1c);
+}
+
+/* tilt effect - parallax but make it omnitrix */
+.omnitrix.tilt-active {
+    transition: transform 0.1s ease-out;
+}
+
+/* cooldown - the bar of shame that tells you to wait */
+.cooldown-bar-container {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 3px;
+    z-index: 20;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.cooldown-bar-container.visible {
+    opacity: 1;
+}
+
+.cooldown-bar {
+    width: 100%;
+    height: 100%;
+    background: #ff3333;
+    border-radius: 3px;
+    transition: width 0.1s linear;
+}
+
+.cooldown-bar.ready {
+    background: #1cd947;
+}
+
+body.albedo .cooldown-bar.ready {
+    background: #d91c1c;
+}
+
+/* transformation timer - your alien time is ticking bestie */
+.transform-timer {
+    position: fixed;
+    top: 50%;
+    right: 80px;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 200px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 2px solid #1cd947;
+    border-radius: 25px;
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease, border-color 0.5s ease;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+}
+
+.transform-timer.visible {
+    opacity: 1;
+}
+
+.transform-timer-fill {
+    width: 100%;
+    background: linear-gradient(to top, #1cd947, #0d6323);
+    border-radius: 0 0 23px 23px;
+    transition: height 0.5s linear;
+}
+
+body.albedo .transform-timer {
+    border-color: #d91c1c;
+}
+
+body.albedo .transform-timer-fill {
+    background: linear-gradient(to top, #d91c1c, #631010);
+}
+
+.transform-timer-label {
+    position: absolute;
+    top: -24px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #1cd947;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+body.albedo .transform-timer-label {
+    color: #d91c1c;
+}
