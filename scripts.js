@@ -6,6 +6,19 @@ const btnRight = document.getElementById('btn-right');
 const alienDisplay = document.getElementById('alien-display');
 const scanLine = document.getElementById('scan-line');
 const particlesContainer = document.getElementById('particles-container');
+const soundToggle = document.getElementById('sound-toggle');
+const soundIcon = document.getElementById('sound-icon');
+const randomBtn = document.getElementById('random-btn');
+const themeToggle = document.getElementById('theme-toggle');
+const themeIcon = document.getElementById('theme-icon');
+const favBtn = document.getElementById('fav-btn');
+const favIcon = document.getElementById('fav-icon');
+const infoPanel = document.getElementById('alien-info-panel');
+const infoClose = document.getElementById('info-close');
+const infoAlienImg = document.getElementById('info-alien-img');
+const infoAlienName = document.getElementById('info-alien-name');
+const infoAlienDesc = document.getElementById('info-alien-desc');
+const infoFavIndicator = document.getElementById('info-fav-indicator');
 
 // sound system - because what's an omnitrix without the satisfying clicks
 let soundEnabled = true;
@@ -23,8 +36,37 @@ function playSound(type) {
     }
 }
 
+// favorites - your personal alien tier list basically
+let favorites = JSON.parse(localStorage.getItem('omnitrix-favorites') || '[]');
+
+function saveFavorites() {
+    localStorage.setItem('omnitrix-favorites', JSON.stringify(favorites));
+}
+
+function isFavorited(alienNum) {
+    return favorites.includes(alienNum);
+}
+
+function toggleFavorite(alienNum) {
+    if (isFavorited(alienNum)) {
+        favorites = favorites.filter(n => n !== alienNum);
+    } else {
+        favorites.push(alienNum);
+    }
+    saveFavorites();
+    updateFavBtn();
+    updateHighlights();
+}
+
+function updateFavBtn() {
+    const currentAlien = alienSubset[currentAlienIndex];
+    favIcon.textContent = isFavorited(currentAlien) ? 'â˜…' : 'â˜†';
+}
+
 // state - the brain of the whole operation ngl
 let isActive = false;
+let isAlbedo = false; // evil twin mode lol
+const totalAliens = 86; // yeah we got the whole roster
 const displayCount = 12;
 let alienSubset = [];
 
@@ -38,7 +80,7 @@ const anglePerSegment = 360 / displayCount;
 
 // timeout - bro forgot to use the watch so we shut it down
 let inactivityTimer = null;
-const INACTIVITY_TIMEOUT = 15000;
+const INACTIVITY_TIMEOUT = 15000; // 15 seconds of doing nothing and its bedtime
 
 function resetInactivityTimer() {
     clearTimeout(inactivityTimer);
@@ -57,6 +99,7 @@ function powerDown() {
     holoRing.style.opacity = '0';
     holoRing.style.transform = `scale(0.5) rotate(${ringRotation}deg)`;
     clearTimeout(inactivityTimer);
+    window.dispatchEvent(new CustomEvent('omnitrix-powerdown')); // goodnight sweet prince
 }
 
 // particles - the little floaty bits that make everything look 10x cooler
@@ -78,17 +121,17 @@ function createParticles() {
 }
 createParticles();
 
-// scan line trigger
+// scan line trigger - that satisfying dna scanner sweep
 function triggerScanLine() {
     scanLine.classList.remove('scanning');
-    void scanLine.offsetWidth;
+    void scanLine.offsetWidth; // the classic force reflow hack, ugly but it works
     scanLine.classList.add('scanning');
 }
 
 // build the holographic ring - the circle of alien goodness
 function buildRing() {
-    holoRing.innerHTML = '';
-    const radius = 285;
+    holoRing.innerHTML = ''; // out with the old
+    const radius = 285; // pixel perfect circle, trust
 
     alienSubset.forEach((alienNum, index) => {
         const seg = document.createElement('div');
@@ -105,6 +148,7 @@ function buildRing() {
         img.src = `./assets/aliens/${alienNum}.png`;
         img.classList.add('alien-icon');
         if (index === currentAlienIndex) img.classList.add('selected');
+        if (isFavorited(alienNum)) img.classList.add('favorited');
 
         img.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -116,13 +160,19 @@ function buildRing() {
             }
         });
 
+        // double tap for the tea on this alien
+        img.addEventListener('dblclick', (e) => {
+            e.stopPropagation();
+            if (isActive) openInfoPanel(alienNum);
+        });
+
         seg.appendChild(img);
         holoRing.appendChild(seg);
     });
 }
 buildRing();
 
-// flash div
+// flash div - the screen goes white like you just looked at the sun
 const flashDiv = document.createElement('div');
 flashDiv.classList.add('transform-flash');
 document.body.appendChild(flashDiv);
@@ -132,19 +182,21 @@ function updateHighlights() {
     const icons = holoRing.querySelectorAll('.alien-icon');
     icons.forEach((icon, i) => {
         icon.classList.toggle('selected', i === currentAlienIndex);
+        icon.classList.toggle('favorited', isFavorited(alienSubset[i]));
     });
 }
 
 // rotate the ring - spin that wheel like its a game show
 function rotateRing(steps) {
-    if (!isActive) return;
+    if (!isActive) return; // cant scroll if the watch aint on bro
     playSound('cycle');
     resetInactivityTimer();
     triggerScanLine();
 
+    const prevSrc = alienDisplay.src;
+
     currentAlienIndex -= steps;
 
-    // FIXED: proper modulo wrapping for negative indices
     if (currentAlienIndex < 0) {
         currentAlienIndex = (currentAlienIndex % displayCount + displayCount) % displayCount;
     } else if (currentAlienIndex >= displayCount) {
@@ -166,6 +218,8 @@ function rotateRing(steps) {
     holoRing.style.transform = `scale(1) rotate(${ringRotation}deg)`;
     updateHighlights();
     alienDisplay.src = `./assets/aliens/${alienSubset[currentAlienIndex]}.png`;
+    updateFavBtn();
+    window.dispatchEvent(new CustomEvent('omnitrix-cycle', { detail: { prevSrc } }));
 }
 
 // transform - ITS HERO TIME
@@ -173,6 +227,7 @@ function triggerTransform() {
     playSound('transform');
     clearTimeout(inactivityTimer);
 
+    // the dramatic silhouette moment, you know the one
     anel.classList.add('transforming');
     flashDiv.classList.add('active');
 
@@ -184,20 +239,30 @@ function triggerTransform() {
         particlesContainer.classList.remove('active');
         holoRing.style.opacity = '0';
         holoRing.style.transform = `scale(0.5) rotate(${ringRotation}deg)`;
+        window.dispatchEvent(new CustomEvent('omnitrix-transform'));
     }, 1200);
 }
 
-// screen click
+// screen click - slap that bad boy to turn it on
 anel.addEventListener('click', () => {
     isActive = !isActive;
     if (isActive) {
+        const beforeEvent = new CustomEvent('omnitrix-before-activate', { cancelable: true });
+        window.dispatchEvent(beforeEvent);
+        if (beforeEvent.defaultPrevented) {
+            isActive = false;
+            return;
+        }
         playSound('cycle');
         anel.classList.add('active');
         alienDisplay.src = `./assets/aliens/${alienSubset[currentAlienIndex]}.png`;
+        updateFavBtn();
         particlesContainer.classList.add('active');
+
         holoRing.style.opacity = '1';
         holoRing.style.transform = `scale(1) rotate(${ringRotation}deg)`;
         resetInactivityTimer();
+        window.dispatchEvent(new CustomEvent('omnitrix-activate'));
     } else {
         powerDown();
     }
@@ -214,13 +279,13 @@ btnRight.addEventListener('click', (e) => {
     rotateRing(-1);
 });
 
-// mouse wheel
+// mouse wheel - scroll to pick your fighter
 window.addEventListener('wheel', (e) => {
     if (!isActive) return;
     rotateRing(e.deltaY < 0 ? 1 : -1);
 });
 
-// keyboard controls
+// keyboard controls - for the pc master race gamers
 window.addEventListener('keydown', (e) => {
     switch (e.key) {
         case 'ArrowLeft':
@@ -239,7 +304,9 @@ window.addEventListener('keydown', (e) => {
             }
             break;
         case 'Escape':
-            if (isActive) {
+            if (infoPanel.classList.contains('visible')) {
+                closeInfoPanel();
+            } else if (isActive) {
                 powerDown();
             }
             break;
@@ -266,3 +333,67 @@ window.addEventListener('touchend', (e) => {
         rotateRing(dx > 0 ? 1 : -1);
     }
 }, { passive: true });
+
+// sound toggle
+soundToggle.addEventListener('click', () => {
+    soundEnabled = !soundEnabled;
+    soundIcon.textContent = soundEnabled ? 'â™ª' : 'â™ªÌ¶';
+});
+
+// random alien - feeling lucky punk?
+randomBtn.addEventListener('click', () => {
+    if (!isActive) anel.click(); // wake up first then we talk
+
+    // Pick a random index different from current
+    let randomIndex;
+    do {
+        randomIndex = Math.floor(Math.random() * displayCount);
+    } while (randomIndex === currentAlienIndex && displayCount > 1);
+
+    const steps = currentAlienIndex - randomIndex;
+    // rapid spin animation cause we love the drama
+    let totalSteps = Math.abs(steps) + displayCount; // extra full spin for the theatrics
+    let direction = steps >= 0 ? 1 : -1;
+    let i = 0;
+    const spinInterval = setInterval(() => {
+        rotateRing(direction);
+        i++;
+        if (i >= totalSteps) {
+            clearInterval(spinInterval);
+        }
+    }, 100);
+});
+
+// theme toggle - go full villain arc with albedo red
+themeToggle.addEventListener('click', () => {
+    isAlbedo = !isAlbedo;
+    document.body.classList.toggle('albedo', isAlbedo);
+    themeIcon.textContent = isAlbedo ? 'A' : 'B';
+    // gotta match the vibe with new particle colors
+    createParticles();
+});
+
+// favorites button
+favBtn.addEventListener('click', () => {
+    if (!isActive) return;
+    toggleFavorite(alienSubset[currentAlienIndex]);
+});
+
+// info panel - the alien's linkedin basically
+function openInfoPanel(alienNum) {
+    infoAlienImg.src = `./assets/aliens/${alienNum}.png`;
+    infoAlienName.textContent = `Alien #${alienNum}`;
+    infoAlienDesc.textContent = 'Omnitrix database entry.';
+    infoFavIndicator.textContent = isFavorited(alienNum) ? 'Favorited' : '';
+    infoPanel.classList.add('visible');
+}
+
+function closeInfoPanel() {
+    infoPanel.classList.remove('visible');
+}
+
+infoClose.addEventListener('click', closeInfoPanel);
+
+infoPanel.addEventListener('click', (e) => {
+    if (e.target === infoPanel) closeInfoPanel();
+});
