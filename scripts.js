@@ -1,5 +1,6 @@
 ﻿// grabbing all the dom elements like groceries on a sunday
 const anel = document.getElementById('anel');
+const holoRing = document.getElementById('holo-ring');
 const btnLeft = document.getElementById('btn-left');
 const btnRight = document.getElementById('btn-right');
 const alienDisplay = document.getElementById('alien-display');
@@ -32,10 +33,12 @@ for (let i = 1; i <= displayCount; i++) {
 }
 
 let currentAlienIndex = 0;
+let ringRotation = 0;
+const anglePerSegment = 360 / displayCount;
 
 // timeout - bro forgot to use the watch so we shut it down
 let inactivityTimer = null;
-const INACTIVITY_TIMEOUT = 15000; // 15 seconds of doing nothing and its bedtime
+const INACTIVITY_TIMEOUT = 15000;
 
 function resetInactivityTimer() {
     clearTimeout(inactivityTimer);
@@ -51,6 +54,8 @@ function powerDown() {
     isActive = false;
     anel.classList.remove('active');
     particlesContainer.classList.remove('active');
+    holoRing.style.opacity = '0';
+    holoRing.style.transform = `scale(0.5) rotate(${ringRotation}deg)`;
     clearTimeout(inactivityTimer);
 }
 
@@ -73,19 +78,64 @@ function createParticles() {
 }
 createParticles();
 
-// scan line trigger - that satisfying dna scanner sweep
+// scan line trigger
 function triggerScanLine() {
     scanLine.classList.remove('scanning');
-    void scanLine.offsetWidth; // the classic force reflow hack, ugly but it works
+    void scanLine.offsetWidth;
     scanLine.classList.add('scanning');
 }
 
-// flash div - the screen goes white like you just looked at the sun
+// build the holographic ring - the circle of alien goodness
+function buildRing() {
+    holoRing.innerHTML = '';
+    const radius = 285;
+
+    alienSubset.forEach((alienNum, index) => {
+        const seg = document.createElement('div');
+        seg.classList.add('holo-segment');
+
+        const angle = (index * anglePerSegment) - 90;
+        const radian = angle * (Math.PI / 180);
+        const x = Math.cos(radian) * radius;
+        const y = Math.sin(radian) * radius;
+
+        seg.style.transform = `translate(${x}px, ${y}px)`;
+
+        const img = document.createElement('img');
+        img.src = `./assets/aliens/${alienNum}.png`;
+        img.classList.add('alien-icon');
+        if (index === currentAlienIndex) img.classList.add('selected');
+
+        img.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isActive && index === currentAlienIndex) {
+                triggerTransform();
+            } else if (isActive) {
+                let steps = currentAlienIndex - index;
+                rotateRing(steps);
+            }
+        });
+
+        seg.appendChild(img);
+        holoRing.appendChild(seg);
+    });
+}
+buildRing();
+
+// flash div
 const flashDiv = document.createElement('div');
 flashDiv.classList.add('transform-flash');
 document.body.appendChild(flashDiv);
 
-// rotate through aliens
+// update highlights
+function updateHighlights() {
+    const icons = holoRing.querySelectorAll('.alien-icon');
+    icons.forEach((icon, i) => {
+        icon.classList.toggle('selected', i === currentAlienIndex);
+    });
+}
+
+// rotate the ring - spin that wheel like its a game show
 function rotateRing(steps) {
     if (!isActive) return;
     playSound('cycle');
@@ -94,13 +144,27 @@ function rotateRing(steps) {
 
     currentAlienIndex -= steps;
 
-    // BUG: this wrapping logic is wrong, negative index crashes it
+    // FIXED: proper modulo wrapping for negative indices
     if (currentAlienIndex < 0) {
-        currentAlienIndex = displayCount - 1;
+        currentAlienIndex = (currentAlienIndex % displayCount + displayCount) % displayCount;
     } else if (currentAlienIndex >= displayCount) {
-        currentAlienIndex = 0;
+        currentAlienIndex = currentAlienIndex % displayCount;
     }
 
+    ringRotation += (steps * anglePerSegment);
+
+    const segments = holoRing.querySelectorAll('.holo-segment');
+    const radius = 285;
+    segments.forEach((seg, index) => {
+        const angle = (index * anglePerSegment) - 90;
+        const radian = angle * (Math.PI / 180);
+        const x = Math.cos(radian) * radius;
+        const y = Math.sin(radian) * radius;
+        seg.style.transform = `translate(${x}px, ${y}px) rotate(${-ringRotation}deg)`;
+    });
+
+    holoRing.style.transform = `scale(1) rotate(${ringRotation}deg)`;
+    updateHighlights();
     alienDisplay.src = `./assets/aliens/${alienSubset[currentAlienIndex]}.png`;
 }
 
@@ -109,7 +173,6 @@ function triggerTransform() {
     playSound('transform');
     clearTimeout(inactivityTimer);
 
-    // the dramatic silhouette moment, you know the one
     anel.classList.add('transforming');
     flashDiv.classList.add('active');
 
@@ -119,10 +182,12 @@ function triggerTransform() {
         isActive = false;
         anel.classList.remove('active');
         particlesContainer.classList.remove('active');
+        holoRing.style.opacity = '0';
+        holoRing.style.transform = `scale(0.5) rotate(${ringRotation}deg)`;
     }, 1200);
 }
 
-// screen click - slap that bad boy to turn it on
+// screen click
 anel.addEventListener('click', () => {
     isActive = !isActive;
     if (isActive) {
@@ -130,6 +195,8 @@ anel.addEventListener('click', () => {
         anel.classList.add('active');
         alienDisplay.src = `./assets/aliens/${alienSubset[currentAlienIndex]}.png`;
         particlesContainer.classList.add('active');
+        holoRing.style.opacity = '1';
+        holoRing.style.transform = `scale(1) rotate(${ringRotation}deg)`;
         resetInactivityTimer();
     } else {
         powerDown();
@@ -147,7 +214,13 @@ btnRight.addEventListener('click', (e) => {
     rotateRing(-1);
 });
 
-// keyboard controls - for the pc master race gamers
+// mouse wheel
+window.addEventListener('wheel', (e) => {
+    if (!isActive) return;
+    rotateRing(e.deltaY < 0 ? 1 : -1);
+});
+
+// keyboard controls
 window.addEventListener('keydown', (e) => {
     switch (e.key) {
         case 'ArrowLeft':
@@ -171,12 +244,6 @@ window.addEventListener('keydown', (e) => {
             }
             break;
     }
-});
-
-// mouse wheel - scroll to pick your fighter
-window.addEventListener('wheel', (e) => {
-    if (!isActive) return;
-    rotateRing(e.deltaY < 0 ? 1 : -1);
 });
 
 // touch swipe - for the mobile gang
