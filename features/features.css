@@ -378,3 +378,280 @@ body.albedo .playlist-actions button {
     border-color: #d91c1c;
     color: #d91c1c;
 }
+
+/* master control panel - the secret hacking interface */
+.master-control-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    width: 380px;
+    background: rgba(10, 10, 10, 0.98);
+    border: 3px solid #1cd947;
+    border-radius: 8px;
+    padding: 24px;
+    z-index: 10002;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 0 40px rgba(28, 217, 71, 0.4), inset 0 0 20px rgba(28, 217, 71, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    font-family: monospace;
+}
+
+.master-control-panel.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+body.albedo .master-control-panel {
+    border-color: #d91c1c;
+    box-shadow: 0 0 40px rgba(217, 28, 28, 0.4), inset 0 0 20px rgba(217, 28, 28, 0.2);
+}
+
+.master-control-panel h3 {
+    color: #1cd947;
+    margin: 0;
+    font-size: 20px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-shadow: 0 0 8px #1cd947;
+}
+
+body.albedo .master-control-panel h3 {
+    color: #d91c1c;
+    text-shadow: 0 0 8px #d91c1c;
+}
+
+.master-control-panel p {
+    color: #aaa;
+    margin: 0;
+    font-size: 14px;
+}
+
+.mc-inputs {
+    display: flex;
+    gap: 10px;
+}
+
+.mc-inputs input {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid #1cd947;
+    color: #1cd947;
+    padding: 10px;
+    font-family: monospace;
+    font-size: 16px;
+    letter-spacing: 4px;
+    text-align: center;
+    outline: none;
+}
+
+body.albedo .mc-inputs input {
+    border-color: #d91c1c;
+    color: #d91c1c;
+}
+
+.mc-inputs button {
+    background: rgba(28, 217, 71, 0.2);
+    border: 1px solid #1cd947;
+    color: #1cd947;
+    padding: 0 20px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.mc-inputs button:hover {
+    background: rgba(28, 217, 71, 0.4);
+}
+
+body.albedo .mc-inputs button {
+    background: rgba(217, 28, 28, 0.2);
+    border-color: #d91c1c;
+    color: #d91c1c;
+}
+
+body.albedo .mc-inputs button:hover {
+    background: rgba(217, 28, 28, 0.4);
+}
+
+.mc-status {
+    height: 20px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.mc-progress {
+    margin-top: 10px;
+}
+
+.mc-progress h4 {
+    color: #ccc;
+    font-size: 12px;
+    margin-bottom: 6px;
+    font-weight: normal;
+}
+
+.mc-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.mc-bar-fill {
+    height: 100%;
+    background: #1cd947;
+    width: 0%;
+    transition: width 0.5s ease;
+}
+
+body.albedo .mc-bar-fill {
+    background: #d91c1c;
+}
+
+/* unlock toast - the little popup when you get a new alien */
+.unlock-toast {
+    position: fixed;
+    bottom: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(10, 10, 10, 0.9);
+    border: 2px solid gold;
+    border-radius: 50px;
+    padding: 8px 20px 8px 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 10005;
+    transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+.unlock-toast.visible {
+    bottom: 30px;
+}
+
+.unlock-toast img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 5px gold);
+}
+
+.unlock-toast span {
+    color: gold;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* pagination - page 1 of X indicator */
+.pagination-container {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid #1cd947;
+    border-radius: 20px;
+    padding: 6px 16px;
+    z-index: 90;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+}
+
+.pagination-container.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+body.albedo .pagination-container {
+    border-color: #d91c1c;
+}
+
+.page-counter {
+    color: #1cd947;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+body.albedo .page-counter {
+    color: #d91c1c;
+}
+
+/* help overlay - keyboard shortcuts manifest */
+.help-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 20000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+
+.help-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.help-box {
+    background: #151515;
+    border: 2px solid #555;
+    border-radius: 12px;
+    padding: 30px;
+    min-width: 300px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.help-box h3 {
+    color: #fff;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+.help-box ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.help-box li {
+    color: #ccc;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+}
+
+.help-box li span {
+    background: #333;
+    padding: 4px 10px;
+    border-radius: 6px;
+    color: #fff;
+    font-family: monospace;
+    font-size: 13px;
+    border: 1px solid #444;
+}
