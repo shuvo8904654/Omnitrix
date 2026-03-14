@@ -1,6 +1,12 @@
 # Ben 10 Omniverse Omnitrix (Vanilla HTML/CSS/JS)
 
-A fully functional, browser-based recreation of the Ben 10 Omniverse Omnitrix, built entirely from scratch without frameworks, using raw HTML, CSS, and JavaScript. I built this project to challenge myself with complex CSS animations, 3D perspective manipulation, Web Audio implementation, and state management using vanilla JS.
+A fully functional, browser-based recreation of the Ben 10 Omniverse Omnitrix, built entirely from scratch without frameworks, using raw HTML, CSS, and JavaScript.
+
+## Screenshots
+
+| Standby Mode | Active (Ben Theme) | Active (Albedo Theme) |
+|:---:|:---:|:---:|
+| ![Standby](./assets/screenshots/image.png) | ![Ben Theme](./assets/screenshots/image%20copy.png) | ![Albedo Theme](./assets/screenshots/image%20copy%202.png) |
 
 ## Features
 
